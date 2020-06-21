@@ -8,14 +8,26 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      USER: kksudo
+      VERSION: 1.1
     steps:
     - name: Checkout repo
       uses: actions/checkout@v2
     - name: Push Docker image to GitHub Packages
       uses: docker/build-push-action@v1
       with:
-        username: kksudo
+        username: ${USER}
         password: ${{ secrets.GH_TOKEN }}
         registry: docker.pkg.github.com
         repository: kksudo/odyssey-docker/odyssey
         tag_with_ref: true
+        tags: ${VERSION}
+    - name: Push Docker image to DockerHub
+      uses: docker/build-push-action@v1
+      with:
+        username: ${USER}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        repository: ${USER}/odyssey-docker
+        tag_with_ref: true
+        tags: ${VERSION}
