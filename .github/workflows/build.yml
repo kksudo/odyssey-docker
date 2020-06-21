@@ -11,10 +11,11 @@ jobs:
     steps:
     - name: Checkout repo
       uses: actions/checkout@v2
-    - name: build and docker image and push
+    - name: Push Docker image to GitHub Packages
       uses: docker/build-push-action@v1
       with:
         username: kksudo
         password: ${{ secrets.GH_TOKEN }}
         registry: docker.pkg.github.com
-        repository: kksudo/odyssey-docker
+        repository: kksudo/odyssey-docker/odyssey
+        tag_with_ref: true
