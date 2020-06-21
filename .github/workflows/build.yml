@@ -27,7 +27,7 @@ jobs:
       uses: docker/build-push-action@v1
       with:
         username: ${USER}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        password: ${{ secrets.DHUB_TOKEN }}
         repository: ${USER}/odyssey-docker
         tag_with_ref: true
         tags: "1.1"
