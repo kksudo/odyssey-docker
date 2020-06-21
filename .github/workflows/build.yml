@@ -22,7 +22,7 @@ jobs:
         registry: docker.pkg.github.com
         repository: kksudo/odyssey-docker/odyssey
         tag_with_ref: true
-        tags: ${VERSION}
+        tags: "1.1"
     - name: Push Docker image to DockerHub
       uses: docker/build-push-action@v1
       with:
@@ -30,4 +30,4 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
         repository: ${USER}/odyssey-docker
         tag_with_ref: true
-        tags: ${VERSION}
+        tags: "1.1"
