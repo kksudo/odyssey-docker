@@ -1,0 +1,20 @@
+name: master-build
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+    - name: build and docker image and push
+      uses: docker/build-push-action@v1
+      with:
+        username: kksudo
+        password: ${{ secrets.GH_TOKEN }}
+        registry: docker.pkg.github.com
+        repository: kksudo/odyssey-docker
