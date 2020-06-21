@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       USER: kksudo
-      VERSION: 1.1
+      VERSION: "1.1"
     steps:
     - name: Checkout repo
       uses: actions/checkout@v2
