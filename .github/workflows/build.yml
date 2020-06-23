@@ -23,6 +23,8 @@ jobs:
         repository: kksudo/odyssey-docker/odyssey
         tag_with_ref: true
         tags: "1.1"
+    - name: DEBUG:Setup tmate session
+      uses: mxschmitt/action-tmate@v2
     - name: Push Docker image to DockerHub
       uses: docker/build-push-action@v1
       with:
