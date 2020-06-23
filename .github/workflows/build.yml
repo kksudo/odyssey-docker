@@ -11,8 +11,6 @@ env:
   ODYSSEY_GIT_REPO: "yandex/odyssey"
   DOCKER_REG_GIT: "docker.pkg.github.com"
   DOCKER_REPO_GIT: "odyssey-docker/odyssey"
-  DOCKER_REG_HUB: "registry.hub.docker.com"
-
 
 jobs:
   build:
@@ -23,7 +21,7 @@ jobs:
     - name: Get odyssey release version
       run: RELEASE_VERSION=$(curl --silent https://api.github.com/repos/${ODYSSEY_GIT_REPO}/releases/latest | grep '"tag_name":' | cut -d'"' -f4)
     - name: Build image
-      run: docker build --build-arg ODYSSEY_VERSION=${RELEASE_VERSION} -t ${DOCKER_IMAGE}:${{ github.job }}
+      run: docker build --build-arg ODYSSEY_VERSION=${RELEASE_VERSION} -t ${DOCKER_IMAGE}:${{ github.job }} .
     - name: Set image tags
       run: |
         docker tag ${DOCKER_IMAGE}:${{ github.job }} ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:${RELEASE_VERSION}
