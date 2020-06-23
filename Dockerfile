@@ -1,6 +1,6 @@
 FROM ubuntu:focal as builder
 
-ENV ODYSSEY_VERSION 1.1
+ARG ODYSSEY_VERSION=1.0
 ENV DEBIAN_FRONTEND noninteractive
 
 WORKDIR /tmp/

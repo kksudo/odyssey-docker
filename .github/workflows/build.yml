@@ -5,31 +5,36 @@ on:
     branches:
       - develop
 
+env:
+  USER: ${{ secrets.USER }}
+  DOCKER_IMAGE: "odyssey-docker"
+  ODYSSEY_GIT_REPO: "yandex/odyssey"
+  DOCKER_REG_GIT: "docker.pkg.github.com"
+  DOCKER_REPO_GIT: "odyssey-docker/odyssey"
+  DOCKER_REG_HUB: "registry.hub.docker.com"
+
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      USER: kksudo
-      VERSION: "1.1"
     steps:
     - name: Checkout repo
-      uses: actions/checkout@v2
-    - name: Push Docker image to GitHub Packages
-      uses: docker/build-push-action@v1
-      with:
-        username: ${USER}
-        password: ${{ secrets.GH_TOKEN }}
-        registry: docker.pkg.github.com
-        repository: kksudo/odyssey-docker/odyssey
-        tag_with_ref: true
-        tags: "1.1"
-    - name: DEBUG:Setup tmate session
-      uses: mxschmitt/action-tmate@v2
-    - name: Push Docker image to DockerHub
-      uses: docker/build-push-action@v1
-      with:
-        username: ${USER}
-        password: ${{ secrets.DHUB_TOKEN }}
-        repository: ${USER}/odyssey-docker
-        tag_with_ref: true
-        tags: "1.1"
+      uses: actions/checkout@master
+    - name: Get odyssey release version
+      run: RELEASE_VERSION=$(curl --silent https://api.github.com/repos/${ODYSSEY_GIT_REPO}/releases/latest | grep '"tag_name":' | cut -d'"' -f4)
+    - name: Build image
+      run: docker build --build-arg ODYSSEY_VERSION=${RELEASE_VERSION} -t ${DOCKER_IMAGE}:${{ github.job }}
+    - name: Set image tags
+      run: |
+        docker tag ${DOCKER_IMAGE}:${{ github.job }} ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:${RELEASE_VERSION}
+        docker tag ${DOCKER_IMAGE}:${{ github.job }} ${USER}/${DOCKER_IMAGE}:${RELEASE_VERSION}
+    - name: Push image to GitHub Packages
+      run: |
+        docker login docker.pkg.github.com -u ${USER} -p ${GITHUB_TOKEN}
+        docker push ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:${RELEASE_VERSION}
+        docker logout
+    - name: Push image to DockerHub
+      run: |
+        docker login -u ${USER} -p ${DOCKERHUB_TOKEN}
+        docker push ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:${RELEASE_VERSION}
+        docker logout
