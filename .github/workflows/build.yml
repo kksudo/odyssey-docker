@@ -29,11 +29,11 @@ jobs:
         docker tag ${DOCKER_IMAGE}:${{ github.job }} ${USER}/${DOCKER_IMAGE}:${RELEASE_VERSION}
     - name: Push image to GitHub Packages
       run: |
-        docker login docker.pkg.github.com -u ${USER} -p ${GITHUB_TOKEN}
+        docker login docker.pkg.github.com -u ${USER} -p ${{secrets.GH_TOKEN}}
         docker push ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:${RELEASE_VERSION}
         docker logout
     - name: Push image to DockerHub
       run: |
-        docker login -u ${USER} -p ${DOCKERHUB_TOKEN}
+        docker login -u ${USER} -p ${{secrets.DOCKERHUB_TOKEN}}
         docker push ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:${RELEASE_VERSION}
         docker logout
