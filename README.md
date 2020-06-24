@@ -4,13 +4,10 @@
 ### Odyssey
 Advanced multi-threaded PostgreSQL connection pooler and request router.
 
-#### Project status
-The project is in development mode.
-
 Odyssey Docker image
 ======================
 
-Automated docker builds for [yandex/odyssey](https://github.com/yandex/odyssey)
+Automated docker builds for [yandex/odyssey](https://github.com/yandex/odyssey).   
 This is a minimal [Odyssey](https://github.com/yandex/odyssey) image, based on Ubuntu Focal.
 
 Features:
@@ -26,3 +23,6 @@ Base images:
 
 - `1.1` - Latest stable version.
 
+
+#### Project status
+The project is in development mode.   
