@@ -6,14 +6,14 @@ on:
       - develop
 
 env:
-  USER: ${{ secrets.USER }}
+  USER: "kksudo"
   DOCKER_IMAGE: "odyssey-docker"
   ODYSSEY_GIT_REPO: "yandex/odyssey"
   DOCKER_REG_GIT: "docker.pkg.github.com"
   DOCKER_REPO_GIT: "odyssey-docker/odyssey"
 
 jobs:
-  build:
+  main-build:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repo
@@ -31,9 +31,11 @@ jobs:
       run: |
         docker login docker.pkg.github.com -u ${USER} -p ${{secrets.GH_TOKEN}}
         docker push ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:${RELEASE_VERSION}
-        docker logout
+        docker logout ${DOCKER_REG_GIT}
+        echo "The docker image ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT} successfully pushed pushed"
     - name: Push image to DockerHub
       run: |
         docker login -u ${USER} -p ${{secrets.DOCKERHUB_TOKEN}}
-        docker push ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:${RELEASE_VERSION}
+        docker push ${USER}/${DOCKER_IMAGE}:${RELEASE_VERSION}
         docker logout
+        echo "The docker image ${USER}/${DOCKER_IMAGE}:${RELEASE_VERSION} successfully pushed pushed"
