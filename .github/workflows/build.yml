@@ -26,16 +26,20 @@ jobs:
     - name: Set image tags
       run: |
         docker tag ${DOCKER_IMAGE}:${{ github.job }} ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:${RELEASE_VERSION}
+        docker tag ${DOCKER_IMAGE}:${{ github.job }} ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:${{ github.job }}
         docker tag ${DOCKER_IMAGE}:${{ github.job }} ${USER}/${DOCKER_IMAGE}:${RELEASE_VERSION}
+        docker tag ${DOCKER_IMAGE}:${{ github.job }} ${USER}/${DOCKER_IMAGE}:${{ github.job }}
     - name: Push image to GitHub Packages
       run: |
         docker login docker.pkg.github.com -u ${USER} -p ${{secrets.GH_TOKEN}}
         docker push ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:${RELEASE_VERSION}
+        docker push ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:${{ github.job }}
         docker logout ${DOCKER_REG_GIT}
-        echo "The docker image ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT} successfully pushed pushed"
+        echo "The docker image ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:${RELEASE_VERSION} successfully pushed pushed"
     - name: Push image to DockerHub
       run: |
         docker login -u ${USER} -p ${{secrets.DOCKERHUB_TOKEN}}
         docker push ${USER}/${DOCKER_IMAGE}:${RELEASE_VERSION}
+        docker push ${USER}/${DOCKER_IMAGE}:${{ github.job }}
         docker logout
         echo "The docker image ${USER}/${DOCKER_IMAGE}:${RELEASE_VERSION} successfully pushed pushed"
