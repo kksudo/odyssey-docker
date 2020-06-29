@@ -1,9 +1,8 @@
-name: master-build
+name: build
 
 on:
-  push:
-    branches:
-      - develop
+  repository_dispatch:
+    types: [build]
 
 env:
   USER: "kksudo"
@@ -36,10 +35,11 @@ jobs:
         docker push ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:${{ github.job }}
         docker logout ${DOCKER_REG_GIT}
         echo "The docker image ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:${RELEASE_VERSION} successfully pushed pushed"
-    - name: Push image to DockerHub
-      run: |
-        docker login -u ${USER} -p ${{secrets.DOCKERHUB_TOKEN}}
-        docker push ${USER}/${DOCKER_IMAGE}:${RELEASE_VERSION}
-        docker push ${USER}/${DOCKER_IMAGE}:${{ github.job }}
-        docker logout
-        echo "The docker image ${USER}/${DOCKER_IMAGE}:${RELEASE_VERSION} successfully pushed pushed"
+#   TODO: implement hook for build image in DockerHub
+#    - name: Push image to DockerHub
+#      run: |
+#        docker login -u ${USER} -p ${{secrets.DOCKERHUB_TOKEN}}
+#        docker push ${USER}/${DOCKER_IMAGE}:${RELEASE_VERSION}
+#        docker push ${USER}/${DOCKER_IMAGE}:${{ github.job }}
+#        docker logout
+#        echo "The docker image ${USER}/${DOCKER_IMAGE}:${RELEASE_VERSION} successfully pushed pushed"
