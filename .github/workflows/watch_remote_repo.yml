@@ -14,6 +14,9 @@ jobs:
     watch-repo:
       runs-on: ubuntu-latest
       steps:
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v2
+#       touch continue or sudo touch /continue
       - name: Read local env
         id: set_vars
         run: |
@@ -21,9 +24,6 @@ jobs:
           echo "::set-output name=matrix::$vars"
       - name: Echo vars
         run: echo "${{fromJson(steps.set_var.outputs.matrix).OD_MAIN_COMMIT_ID}}"
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v2
-#       touch continue or sudo touch /continue
 
 #    build-event:
 #      needs: watch-repo
