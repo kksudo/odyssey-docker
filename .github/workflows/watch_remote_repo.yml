@@ -29,7 +29,7 @@ jobs:
           MY_CONTEXT: ${{ steps.set_vars.outputs._context }}
         run: |
           echo "$MY_CONTEXT"
-          echo "${{ fromJson(steps.set_vars.outputs._context) }}"
+          echo "${{ fromJson(steps.set_vars.outputs._context).OD_MAIN_COMMIT_ID }}"
 
 #    build-event:
 #      needs: watch-repo
