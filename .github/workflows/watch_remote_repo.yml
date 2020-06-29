@@ -16,16 +16,18 @@ jobs:
       steps:
       - name: Checkout repo
         uses: actions/checkout@master
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v2
+#      - name: Setup tmate session
+#        uses: mxschmitt/action-tmate@v2
 #       touch continue or sudo touch /continue
       - name: Read local env
         id: set_vars
         run: |
-          vars=`cat .github/workflows/env.json`
+          vars="cat .github/workflows/env.json"
           echo "::set-output name=matrix::$vars"
       - name: Echo vars
-        run: echo "${{fromJson(steps.set_vars.outputs.matrix).OD_MAIN_COMMIT_ID}}"
+        run: |
+          echo "${{steps.set_vars.outputs.matrix}}"
+          echo "${{fromJson(steps.set_vars.outputs.matrix).OD_MAIN_COMMIT_ID}}"
 
 #    build-event:
 #      needs: watch-repo
