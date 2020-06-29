@@ -22,7 +22,7 @@ jobs:
       - name: Read local env
         id: set_vars
         run: |
-          vars=$(cat .github/workflows/env.json)
+          vars=$(echo $(cat .github/workflows/env.json))
           echo "::set-output name=matrix::$vars"
       - name: Echo vars
         run: echo "${{ fromJson(steps.set_vars.outputs.matrix).ODYSSEY_GIT_REPO }}"
