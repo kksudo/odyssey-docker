@@ -26,8 +26,7 @@ jobs:
           echo "::set-output name=matrix::$vars"
       - name: Echo vars
         run: |
-          echo "${{steps.set_vars.outputs.matrix}}"
-          echo "${{fromJson(steps.set_vars.outputs.matrix).OD_MAIN_COMMIT_ID}}"
+          echo "${{fromJson(steps.set_vars.outputs.matrix).ODYSSEY_GIT_REPO}}"
 
 #    build-event:
 #      needs: watch-repo
