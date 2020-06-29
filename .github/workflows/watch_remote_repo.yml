@@ -18,14 +18,18 @@ jobs:
         uses: actions/checkout@master
 #      - name: Setup tmate session
 #        uses: mxschmitt/action-tmate@v2
-#       touch continue or sudo touch /continue
+#       touch continue or sudo touch /continue to return job
       - name: Read local env
         id: set_vars
         run: |
           vars=$(echo $(cat .github/workflows/env.json))
-          echo "::set-output name=matrix::$vars"
+          echo "::set-output name=_context::$vars"
       - name: Echo vars
-        run: echo "${{ fromJson(steps.set_vars.outputs.matrix).ODYSSEY_GIT_REPO }}"
+        env:
+          MY_CONTEXT: ${{ steps.set_vars.outputs._context }}
+        run: |
+          echo "$MY_CONTEXT"
+          echo "${{ fromJson(steps.set_vars.outputs._context) }}"
 
 #    build-event:
 #      needs: watch-repo
