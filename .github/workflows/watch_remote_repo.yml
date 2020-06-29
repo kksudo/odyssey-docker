@@ -25,7 +25,7 @@ jobs:
           vars="cat .github/workflows/env.json"
           echo "::set-output name=matrix::$vars"
       - name: Echo vars
-        run: echo "${{fromJson(steps.set_vars.outputs.matrix).ODYSSEY_GIT_REPO}}"
+        run: echo "${{ steps.set_vars.outputs.matrix }}"
 
 #    build-event:
 #      needs: watch-repo
