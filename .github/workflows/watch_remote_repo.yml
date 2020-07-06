@@ -13,6 +13,8 @@ jobs:
     watch-repo:
       runs-on: ubuntu-latest
       steps:
+      - name: Checkout repo
+        uses: actions/checkout@master
 #        TODO: uncomment for debugging session via ssh
 #      - name: Setup tmate session
 #        uses: mxschmitt/action-tmate@v2
@@ -22,13 +24,11 @@ jobs:
         run: |
           # Get local vars
           vars=$(echo $(cat .github/workflows/env.json))
-          echo '::set-env name=OD_RELEASE::$(echo $(fromJson($vars).OD_RELEASE))'
-          echo '::set-env name=OD_MAIN_COMMIT_ID::$(echo $(fromJson($vars).OD_MAIN_COMMIT_ID))'
+          echo ::set-env name=OD_RELEASE::$(echo $(fromJson($vars).OD_RELEASE))
+          echo ::set-env name=OD_MAIN_COMMIT_ID::$(echo $(fromJson($vars).OD_MAIN_COMMIT_ID))
           # Get remote vars
-          latest_release=$(curl --silent https://api.github.com/repos/${ODYSSEY_GIT_REPO}/releases/latest | grep '"tag_name":' | cut -d'"' -f4)
-          latest_main_commit_id=$(git ls-remote git://github.com/${ODYSSEY_GIT_REPO}.git HEAD | awk '{ print $1}')
-          echo '::set-env name=LATEST_RELEASE::$(echo $latest_release)'
-          echo '::set-env name=LATEST_MAIN_COMMIT_ID::$(echo $latest_main_commit_id)'
+          echo ::set-env name=LATEST_RELEASE::$(echo $(curl --silent https://api.github.com/repos/${ODYSSEY_GIT_REPO}/releases/latest | grep '"tag_name":' | cut -d'"' -f4))
+          echo ::set-env name=RELEASE_VERSION::$(echo $(git ls-remote git://github.com/${ODYSSEY_GIT_REPO}.git HEAD | awk '{ print $1}'))
       - name: Get latest version the remote repository
         run: |
           echo "LATEST_RELEASE=> ${LATEST_RELEASE}, whereas local release is=> ${OD_RELEASE}"
