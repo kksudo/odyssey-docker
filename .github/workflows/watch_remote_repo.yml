@@ -2,20 +2,20 @@ name: watch-remote-repo
 
 on:
 #  schedule:
-#    - cron:  '*/15 * * * *'
+#    - cron:  '* */1 * * *'
   push:
     branches:
       - develop
-
 env:
   USER: "kksudo"
-
+  ODYSSEY_GIT_REPO: "yandex/odyssey"
 jobs:
     watch-repo:
       runs-on: ubuntu-latest
       steps:
       - name: Checkout repo
         uses: actions/checkout@master
+#        TODO: uncomment for debugging session via ssh
 #      - name: Setup tmate session
 #        uses: mxschmitt/action-tmate@v2
 #       touch continue or sudo touch /continue to return job
@@ -24,15 +24,34 @@ jobs:
         run: |
           vars=$(echo $(cat .github/workflows/env.json))
           echo "::set-output name=_context::$vars"
-      - name: Echo vars
-        env:
-          MY_CONTEXT: ${{ steps.set_vars.outputs._context }}
+      - name: Get latest version the remote repository
         run: |
-          echo "$MY_CONTEXT"
-          echo "${{ fromJson(steps.set_vars.outputs._context).OD_MAIN_COMMIT_ID }}"
+          latest_remote_release=$(curl --silent https://api.github.com/repos/${ODYSSEY_GIT_REPO}/releases/latest | grep '"tag_name":' | cut -d'"' -f4)
+          latest_main_commit_id=$(git ls-remote git://github.com/${ODYSSEY_GIT_REPO}.git HEAD | awk '{ print $1}')
 
+          if [ "$latest_remote_release" -ne "${{ fromJson(steps.set_vars.outputs._context).OD_RELEASE }}" ]
+          then
+            echo "latest_remote_release=> $latest_remote_release"
+            echo "OD_RELEASE=> ${{ fromJson(steps.set_vars.outputs._context).OD_RELEASE }}"
+          elif [ "$latest_main_commit_id" -ne "${{ fromJson(steps.set_vars.outputs._context).OD_MAIN_COMMIT_ID }}" ]
+            echo "$latest_main_commit_id=> $latest_main_commit_id"
+            echo "OD_MAIN_COMMIT_ID=> ${{ fromJson(steps.set_vars.outputs._context).OD_MAIN_COMMIT_ID }}"
+          else
+            echo "finish all jobs, nothing build"
+            echo "::warning No remote changes;finishing all jobs"
+            exit 0
+          fi
+
+
+# TODO: Read output context
+#        run: |
+#          echo "$MY_CONTEXT"
+#          echo "${{ fromJson(steps.set_vars.outputs._context).OD_MAIN_COMMIT_ID }}"
+
+# TODO: send event to build new image
 #    build-event:
 #      needs: watch-repo
+#      if: success()
 #      runs-on: ubuntu-latest
 #      steps:
 #      - name: Repository Dispatch

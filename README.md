@@ -24,5 +24,7 @@ Base images:
 - `1.1` - Latest stable version.
 
 
-#### Project status
-**Warning: The project is under development.**   
+Project status
+--------------
+
+Warning: The project is under development.   
