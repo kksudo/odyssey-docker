@@ -20,34 +20,25 @@ jobs:
 #        uses: mxschmitt/action-tmate@v2
 #       touch continue or sudo touch /continue to return job
       - name: Read local env
-        id: set_vars
+        id: get_vars
         run: |
           vars=$(echo $(cat .github/workflows/env.json))
-          echo "::set-output name=_context::$vars"
+          echo '::set-env name=OD_RELEASE::fromJson($vars).OD_RELEASE'
+          echo '::set-env name=OD_MAIN_COMMIT_ID::fromJson($vars).OD_MAIN_COMMIT_ID'
+          latest_release=$(curl --silent https://api.github.com/repos/${ODYSSEY_GIT_REPO}/releases/latest | grep '"tag_name":' | cut -d'"' -f4)
+          latest_main_commit_id=$(git ls-remote git://github.com/${ODYSSEY_GIT_REPO}.git HEAD | awk '{ print $1}')
+          echo '::set-env name=LATEST_RELEASE::$latest_release'
+          echo '::set-env name=LATEST_MAIN_COMMIT_ID::$latest_main_commit_id'
       - name: Get latest version the remote repository
         run: |
-          latest_remote_release=$(curl --silent https://api.github.com/repos/${ODYSSEY_GIT_REPO}/releases/latest | grep '"tag_name":' | cut -d'"' -f4)
-          latest_main_commit_id=$(git ls-remote git://github.com/${ODYSSEY_GIT_REPO}.git HEAD | awk '{ print $1}')
-
-          if [ "$latest_remote_release" -ne "${{ fromJson(steps.set_vars.outputs._context).OD_RELEASE }}" ]
-          then
-            echo "latest_remote_release=> $latest_remote_release"
-            echo "OD_RELEASE=> ${{ fromJson(steps.set_vars.outputs._context).OD_RELEASE }}"
-          elif [ "$latest_main_commit_id" -ne "${{ fromJson(steps.set_vars.outputs._context).OD_MAIN_COMMIT_ID }}" ]
-          then
-            echo "$latest_main_commit_id=> $latest_main_commit_id"
-            echo "OD_MAIN_COMMIT_ID=> ${{ fromJson(steps.set_vars.outputs._context).OD_MAIN_COMMIT_ID }}"
-          else
-            echo "finish all jobs, nothing build"
-            echo "::warning No remote changes;finishing all jobs"
-            exit 0
-          fi
+          echo "LATEST_RELEASE=> ${LATEST_RELEASE}, whereas local release is=> ${OD_RELEASE}"
+          echo "LATEST_MAIN_COMMIT_ID=> ${LATEST_MAIN_COMMIT_ID}, whereas local release is=> ${OD_MAIN_COMMIT_ID}"
 
 
 # TODO: Read output context
 #        run: |
 #          echo "$MY_CONTEXT"
-#          echo "${{ fromJson(steps.set_vars.outputs._context).OD_MAIN_COMMIT_ID }}"
+#          echo "${{ fromJson(steps.get_vars.outputs._context).OD_MAIN_COMMIT_ID }}"
 
 # TODO: send event to build new image
 #    build-event:
