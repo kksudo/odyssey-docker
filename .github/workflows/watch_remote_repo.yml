@@ -27,12 +27,12 @@ jobs:
 
           echo "::set-output name=_context::$vars"
 
-          echo $vars
-          echo $env.vars
+          echo "vars is => $vars"
+          echo "${{ fromJson(steps.get_vars.outputs._context).OD_MAIN_COMMIT_ID }}"
 
           # Get remote vars
           echo ::set-env name=LATEST_RELEASE::$(echo $(curl --silent https://api.github.com/repos/${ODYSSEY_GIT_REPO}/releases/latest | grep '"tag_name":' | cut -d'"' -f4))
-          echo ::set-env name=RELEASE_VERSION::$(echo $(git ls-remote git://github.com/${ODYSSEY_GIT_REPO}.git HEAD | awk '{ print $1}'))
+          echo ::set-env name=LATEST_MAIN_COMMIT_ID::$(echo $(git ls-remote git://github.com/${ODYSSEY_GIT_REPO}.git HEAD | awk '{ print $1}'))
       - name: Get latest version the remote repository
         run: |
           echo "LATEST_RELEASE=> ${LATEST_RELEASE}, whereas local release is=> ${OD_RELEASE}"
