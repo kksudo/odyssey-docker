@@ -34,6 +34,7 @@ jobs:
             echo "latest_remote_release=> $latest_remote_release"
             echo "OD_RELEASE=> ${{ fromJson(steps.set_vars.outputs._context).OD_RELEASE }}"
           elif [ "$latest_main_commit_id" -ne "${{ fromJson(steps.set_vars.outputs._context).OD_MAIN_COMMIT_ID }}" ]
+          then
             echo "$latest_main_commit_id=> $latest_main_commit_id"
             echo "OD_MAIN_COMMIT_ID=> ${{ fromJson(steps.set_vars.outputs._context).OD_MAIN_COMMIT_ID }}"
           else
