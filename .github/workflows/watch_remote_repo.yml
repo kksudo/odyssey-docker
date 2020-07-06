@@ -24,19 +24,23 @@ jobs:
         run: |
           # Get local vars
           vars=$(echo $(cat .github/workflows/env.json))
-
           echo "::set-output name=_context::$vars"
-
-          echo "vars is => $vars"
-          echo "${{ fromJson(cat .github/workflows/env.json).OD_MAIN_COMMIT_ID }}"
 
           # Get remote vars
           echo ::set-env name=LATEST_RELEASE::$(echo $(curl --silent https://api.github.com/repos/${ODYSSEY_GIT_REPO}/releases/latest | grep '"tag_name":' | cut -d'"' -f4))
           echo ::set-env name=LATEST_MAIN_COMMIT_ID::$(echo $(git ls-remote git://github.com/${ODYSSEY_GIT_REPO}.git HEAD | awk '{ print $1}'))
-      - name: Get latest version the remote repository
+      - name: Debug step
         run: |
           echo "LATEST_RELEASE=> ${LATEST_RELEASE}, whereas local release is=> ${OD_RELEASE}"
           echo "LATEST_MAIN_COMMIT_ID=> ${LATEST_MAIN_COMMIT_ID}, whereas local release is=> ${OD_MAIN_COMMIT_ID}"
+      - name: If new remote release
+        run: echo " Send evevnt to  build image with tag $LATEST_RELEASE"
+        if: $LATEST_RELEASE != ${{ fromJson(steps.get_vars.outputs._context).OD_RELEASE }}
+      - name: If new remote commit
+        run: echo " Send evevnt to  build image from master branch wit ID=> $LATEST_MAIN_COMMIT_ID"
+        if: $LATEST_MAIN_COMMIT_ID != ${{ fromJson(steps.get_vars.outputs._context).OD_MAIN_COMMIT_ID }}
+      - name:
+          run: echo "finished teh job"
 
 
 # TODO: Read output context
