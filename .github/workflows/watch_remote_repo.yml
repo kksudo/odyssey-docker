@@ -35,7 +35,7 @@ jobs:
         if: 1.1 != 1.1
       - name: If new remote release part1
         run: echo " Send evevnt to  build image with tag $LATEST_RELEASE"
-        if: 1.1 != $LATEST_RELEASE
+        if: $LATEST_RELEASE != 1.1
       - name: If new remote release part2
         run: echo " Send evevnt to  build image with tag $LATEST_RELEASE"
         if: 1.1 != ${{ fromJson(steps.get_vars.outputs._context).OD_RELEASE }}
