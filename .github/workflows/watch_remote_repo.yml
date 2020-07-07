@@ -39,7 +39,7 @@ jobs:
       - name: If new remote commit
         run: echo " Send evevnt to  build image from master branch wit ID=> $LATEST_MAIN_COMMIT_ID"
         if: $LATEST_MAIN_COMMIT_ID != ${{ fromJson(steps.get_vars.outputs._context).OD_MAIN_COMMIT_ID }}
-      - name:
+      - name: Empty job after all
         run: echo "finished teh job"
 
 
