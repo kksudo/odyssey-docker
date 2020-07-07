@@ -32,7 +32,7 @@ jobs:
 
       - name: If new remote release
         run: echo " Send evevnt to  build image with tag $LATEST_RELEASE"
-        if: $LATEST_RELEASE != ${{ fromJson(steps.get_vars.outputs._context).OD_RELEASE }}
+        if: 1.1 != ${{ fromJson(steps.get_vars.outputs._context).OD_RELEASE }}
       - name: If new remote commit
         run: echo " Send evevnt to  build image from master branch wit ID=> $LATEST_MAIN_COMMIT_ID"
         if: $LATEST_MAIN_COMMIT_ID != ${{ fromJson(steps.get_vars.outputs._context).OD_MAIN_COMMIT_ID }}
