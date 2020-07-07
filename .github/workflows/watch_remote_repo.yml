@@ -31,18 +31,26 @@ jobs:
           echo ::set-env name=LATEST_MAIN_COMMIT_ID::$(echo $(git ls-remote git://github.com/${ODYSSEY_GIT_REPO}.git HEAD | awk '{ print $1}'))
       - name: Send event to build image with tag
         if: $LATEST_RELEASE != ${{ fromJson(steps.get_vars.outputs._context).OD_RELEASE }}
-        uses: peter-evans/repository-dispatch@v1
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-          event-type: build_release
-          client-payload: '{"release": "$LATEST_RELEASE"}'
+        run: |
+          echo "Send event to build image with tag LATEST_RELEASE=> $LATEST_RELEASE"
       - name: Send event to build image from master branch
         if: $LATEST_MAIN_COMMIT_ID != ${{ fromJson(steps.get_vars.outputs._context).OD_MAIN_COMMIT_ID }}
-        uses: peter-evans/repository-dispatch@v1
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-          event-type: build_master
-          client-payload: '{"id": "$LATEST_MAIN_COMMIT_ID"}'
+        run: |
+          echo "Send event to build image from master branch LATEST_MAIN_COMMIT_ID=> $LATEST_MAIN_COMMIT_ID"
+#      - name: Send event to build image with tag
+#        if: $LATEST_RELEASE != ${{ fromJson(steps.get_vars.outputs._context).OD_RELEASE }}
+#        uses: peter-evans/repository-dispatch@v1
+#        with:
+#          token: ${{ secrets.GH_TOKEN }}
+#          event-type: build_release
+#          client-payload: '{"release": "$LATEST_RELEASE"}'
+#      - name: Send event to build image from master branch
+#        if: $LATEST_MAIN_COMMIT_ID != ${{ fromJson(steps.get_vars.outputs._context).OD_MAIN_COMMIT_ID }}
+#        uses: peter-evans/repository-dispatch@v1
+#        with:
+#          token: ${{ secrets.GH_TOKEN }}
+#          event-type: build_master
+#          client-payload: '{"id": "$LATEST_MAIN_COMMIT_ID"}'
 #      TODO: remove last debug step
       - name: Empty job after all
         run: echo "finished the job; implement msg if the build wasn't run"
