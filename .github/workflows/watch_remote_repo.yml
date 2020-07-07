@@ -29,18 +29,24 @@ jobs:
           # Get remote vars
           echo ::set-env name=LATEST_RELEASE::$(echo $(curl --silent https://api.github.com/repos/${ODYSSEY_GIT_REPO}/releases/latest | grep '"tag_name":' | cut -d'"' -f4))
           echo ::set-env name=LATEST_MAIN_COMMIT_ID::$(echo $(git ls-remote git://github.com/${ODYSSEY_GIT_REPO}.git HEAD | awk '{ print $1}'))
-      - name: Debug step
-        run: |
-          echo "LATEST_RELEASE=> ${LATEST_RELEASE}, whereas local release is=> ${OD_RELEASE}"
-          echo "LATEST_MAIN_COMMIT_ID=> ${LATEST_MAIN_COMMIT_ID}, whereas local release is=> ${OD_MAIN_COMMIT_ID}"
       - name: If new remote release
         run: echo " Send evevnt to  build image with tag $LATEST_RELEASE"
         if: $LATEST_RELEASE != ${{ fromJson(steps.get_vars.outputs._context).OD_RELEASE }}
-      - name: If new remote commit
-        run: echo " Send evevnt to  build image from master branch wit ID=> $LATEST_MAIN_COMMIT_ID"
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          event-type: build_release
+          client-payload: '{"release": "$LATEST_RELEASE"}'
+      - name: Send event to build image from master branch
         if: $LATEST_MAIN_COMMIT_ID != ${{ fromJson(steps.get_vars.outputs._context).OD_MAIN_COMMIT_ID }}
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          event-type: build_master
+          client-payload: '{"id": "$LATEST_MAIN_COMMIT_ID"}'
+#      TODO: remove last debug step
       - name: Empty job after all
-        run: echo "finished teh job"
+        run: echo "finished the job; implement msg if the build wasn't run"
 
 
 # TODO: Read output context
