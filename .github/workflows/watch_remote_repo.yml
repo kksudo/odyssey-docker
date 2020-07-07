@@ -30,7 +30,7 @@ jobs:
           echo ::set-env name=LATEST_RELEASE::$(echo $(curl --silent https://api.github.com/repos/${ODYSSEY_GIT_REPO}/releases/latest | grep '"tag_name":' | cut -d'"' -f4))
           echo ::set-env name=LATEST_MAIN_COMMIT_ID::$(echo $(git ls-remote git://github.com/${ODYSSEY_GIT_REPO}.git HEAD | awk '{ print $1}'))
       - name: Send event to build image with tag
-        if: $LATEST_RELEASE != ${{ fromJson(steps.get_vars.outputs._context).OD_RELEASE }}
+        if: "$LATEST_RELEASE != ${{ fromJson(steps.get_vars.outputs._context).OD_RELEASE }}"
         run: |
           echo "Send event to build image with tag LATEST_RELEASE=> $LATEST_RELEASE"
       - name: Send event to build image from master branch
