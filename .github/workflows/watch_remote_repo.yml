@@ -46,14 +46,14 @@ jobs:
 #        TODO: END remove debug
 
         - name: The official LATEST_RELEASE has been updated
-          if: env.LATEST_REMOTE_RELEASE != ${{ steps.get_local_vars.outputs.od_release }}
+          if: env.LATEST_REMOTE_RELEASE != steps.get_local_vars.outputs.od_release
           uses: peter-evans/repository-dispatch@v1
           with:
             token: ${{ secrets.GH_TOKEN }}
             event-type: build_release
             client-payload: '{"tag": "$LATEST_REMOTE_RELEASE"}'
-        - name: The official master branch has been updated
-          if: env.LATEST_REMOTE_MASTER_COMMIT_ID != ${{ steps.get_local_vars.outputs.od_master_commit_id }}
+        - name: The official MASTER branch has been updated
+          if: env.LATEST_REMOTE_MASTER_COMMIT_ID != steps.get_local_vars.outputs.od_master_commit_id
           uses: peter-evans/repository-dispatch@v1
           with:
             token: ${{ secrets.GH_TOKEN }}
