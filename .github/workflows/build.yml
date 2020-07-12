@@ -11,13 +11,14 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@master
       - run: |
+          echo ${{ github.event.client_payload }}
           echo "New tag=>${{ github.event.client_payload.tag }}"
           echo "New latest master commit_id=>${{ github.event.client_payload.commit }}"
       - name: Build image with new release
         if: ${{ github.event.client_payload.tag }}
         run: |
           echo "New tag=>${{ github.event.client_payload.tag }}"
-      - name: Build image with new release
+      - name: Build image from latest master branch
         if: ${{ github.event.client_payload.commit }}
         run: |
           echo "New latest master commit_id=>${{ github.event.client_payload.commit }}"
