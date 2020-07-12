@@ -30,13 +30,13 @@ jobs:
           uses: peter-evans/repository-dispatch@v1
           with:
             token: ${{ secrets.GH_TOKEN }}
-            event-type: build_release
-            client-payload: '{"tag": "${{ env.LATEST_REMOTE_MASTER_COMMIT_ID }}"}'
+            event-type: release
+            client-payload: '{"id": "${{ env.LATEST_REMOTE_MASTER_COMMIT_ID }, "tag": "true"}"}'
         - name: The official MASTER branch has been updated
           if: env.LATEST_REMOTE_MASTER_COMMIT_ID != steps.get_local_vars.outputs.od_master_commit_id
           uses: peter-evans/repository-dispatch@v1
           with:
             token: ${{ secrets.GH_TOKEN }}
-            event-type: build_master
-            client-payload: '{"commit": "${{ env.LATEST_REMOTE_MASTER_COMMIT_ID }}"}'
+            event-type: master
+            client-payload: '{"id": "${{ env.LATEST_REMOTE_MASTER_COMMIT_ID }, "commit": "true"}"}'
 

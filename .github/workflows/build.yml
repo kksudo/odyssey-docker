@@ -2,24 +2,21 @@ name: build image
 
 on:
   repository_dispatch:
-    types: [build_release,build_master]
+    types: [release,master]
+env:
+  USER: "kksudo"
+  DOCKER_IMAGE: "odyssey-docker"
+  ODYSSEY_GIT_REPO: "yandex/odyssey"
+  DOCKER_REG_GIT: "docker.pkg.github.com"
+  DOCKER_REPO_GIT: "odyssey-docker/odyssey"
 
 jobs:
-  buildReleaseImage:
+  buildImage:
     runs-on: ubuntu-latest
     steps:
-      - name: Build image with new release
+      - run: echo "New tag=>${{ github.event.client_payload.id }}"
         if: ${{ github.event.client_payload.tag }}
-        run: |
-          echo "New tag=>${{ github.event.client_payload.tag }}"
-      - name: Test second action
-        run: echo "build image from tag=${{ github.event.client_payload.tag }}"
-  buildMasterImage:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Build image from latest master branch
+      - run: echo "New latest master commit_id=>${{ github.event.client_payload.id }}"
         if: ${{ github.event.client_payload.commit }}
-        run: |
-          echo "New latest master commit_id=>${{ github.event.client_payload.commit }}"
-      - name: Test second action
-        run: echo "build image from commit_id=${{ github.event.client_payload.tag }}"
+      - name: Build image new image
+        run: docker build --build-arg ODYSSEY_VERSION=${{ github.event.client_payload.id }} -t ${DOCKER_IMAGE}:${GITHUB_ACTION} .
