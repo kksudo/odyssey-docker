@@ -20,11 +20,43 @@ jobs:
           run: |
             echo ::set-env name=LATEST_REMOTE_RELEASE::$(echo $(curl --silent https://api.github.com/repos/${ODYSSEY_GIT_REPO}/releases/latest | grep '"tag_name":' | cut -d'"' -f4))
             echo ::set-env name=LATEST_REMOTE_MASTER_COMMIT_ID::$(echo $(git ls-remote git://github.com/${ODYSSEY_GIT_REPO}.git HEAD | awk '{ print $1}'))
+        - name: Get the local vars from .env
+          id: get_local_vars
+          uses: falti/dotenv-action@v0.2.4
+          with:
+            path: .github/workflows/.env
+
+#        TODO: BEGIN remove debug
         - name: ===DEBUG===
           run: |
             echo
-            echo
+            echo "outputs => ${{ steps.get_local_vars.outputs.od_master_commit_id }}"
+            echo "outputs => ${{ steps.get_local_vars.outputs.od_release }}"
             echo "-- Environment variables ----------------------------------------------"
             env
             echo "-----------------------------------------------------------------------"
-        
+        - name: Run everytime
+          run: |
+            echo "LATEST_REMOTE_RELEASE=$LATEST_REMOTE_RELEASE od_release=${{ steps.get_local_vars.outputs.od_release }}"
+            if [ $LATEST_REMOTE_RELEASE == ${{ steps.get_local_vars.outputs.od_release }} ]; then
+              echo "Strings are equal"
+            else
+              echo "Strings are not equal"
+            fi
+#        TODO: END remove debug
+
+        - name: The official LATEST_RELEASE has been updated
+          if: env.LATEST_REMOTE_RELEASE != ${{ steps.get_local_vars.outputs.od_release }}
+          uses: peter-evans/repository-dispatch@v1
+          with:
+            token: ${{ secrets.GH_TOKEN }}
+            event-type: build_release
+            client-payload: '{"tag": "$LATEST_REMOTE_RELEASE"}'
+        - name: The official master branch has been updated
+          if: env.LATEST_REMOTE_MASTER_COMMIT_ID != ${{ steps.get_local_vars.outputs.od_master_commit_id }}
+          uses: peter-evans/repository-dispatch@v1
+          with:
+            token: ${{ secrets.GH_TOKEN }}
+            event-type: build_master
+            client-payload: '{"commit": "$LATEST_REMOTE_MASTER_COMMIT_ID"}'
+
