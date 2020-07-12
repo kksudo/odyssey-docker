@@ -7,6 +7,7 @@ env:
   USER: "kksudo"
   DOCKER_IMAGE: "odyssey-docker"
   ODYSSEY_GIT_REPO: "yandex/odyssey"
+  ODYSSEY_MAIN_BRANCH: "master"
   DOCKER_REG_GIT: "docker.pkg.github.com"
   DOCKER_REPO_GIT: "odyssey-docker/odyssey"
 
@@ -14,13 +15,15 @@ jobs:
   buildImage:
     runs-on: ubuntu-latest
     steps:
-      - name: Build from new tag
-        if: ${{ github.event.client_payload.tag }}
-        run: echo "New tag=>${{ github.event.client_payload.id }}"
-      - name: Build from new tag
-        if: ${{ github.event.client_payload.commit }}
-        run: echo "New latest master commit_id=>${{ github.event.client_payload.id }}"
       - name: Checkout repo
         uses: actions/checkout@master
-      - name: Build image new image
-        run: docker build --build-arg ODYSSEY_VERSION=${{ github.event.client_payload.id }} -t ${DOCKER_IMAGE}:${GITHUB_ACTION} .
+      - name: Build from new tag
+        if: ${{ github.event.client_payload.tag }}
+        run: |
+          echo "New tag=>${{ github.event.client_payload.id }}"
+          docker build --build-arg ODYSSEY_VERSION=${{ github.event.client_payload.id }} -t ${DOCKER_IMAGE}:${GITHUB_ACTION} .
+      - name: Build from latest commit ID
+        if: ${{ github.event.client_payload.commit }}
+        run: |
+          echo "New latest master commit_id=>${{ github.event.client_payload.id }}"
+          docker build --build-arg ODYSSEY_VERSION=${ODYSSEY_MAIN_BRANCH} -t ${DOCKER_IMAGE}:${GITHUB_ACTION} .
