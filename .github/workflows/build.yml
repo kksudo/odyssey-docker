@@ -11,7 +11,8 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@master
       - run: |
-          echo ${{ github.event.client_payload }}
+          env
+          echo ${{ toJson(github.event.client_payload) }}
           echo "New tag=>${{ github.event.client_payload.tag }}"
           echo "New latest master commit_id=>${{ github.event.client_payload.commit }}"
       - name: Build image with new release
