@@ -5,14 +5,15 @@ on:
     types: [build_release,build_master]
 
 jobs:
-  buildNewRelease:
+  buildImage:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@master
       - run: |
           env
-          echo ${{ toJson(github.event.client_payload) }}
+          echo ${{ github.event.client_payload.tag }}
+          echo ${{ github.event.client_payload.commit }}
           echo "New tag=>${{ github.event.client_payload.tag }}"
           echo "New latest master commit_id=>${{ github.event.client_payload.commit }}"
       - name: Build image with new release
