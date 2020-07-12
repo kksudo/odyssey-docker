@@ -14,9 +14,13 @@ jobs:
   buildImage:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "New tag=>${{ github.event.client_payload.id }}"
+      - name: Build from new tag
         if: ${{ github.event.client_payload.tag }}
-      - run: echo "New latest master commit_id=>${{ github.event.client_payload.id }}"
+        run: echo "New tag=>${{ github.event.client_payload.id }}"
+      - name: Build from new tag
         if: ${{ github.event.client_payload.commit }}
+        run: echo "New latest master commit_id=>${{ github.event.client_payload.id }}"
+      - name: Checkout repo
+        uses: actions/checkout@master
       - name: Build image new image
         run: docker build --build-arg ODYSSEY_VERSION=${{ github.event.client_payload.id }} -t ${DOCKER_IMAGE}:${GITHUB_ACTION} .
