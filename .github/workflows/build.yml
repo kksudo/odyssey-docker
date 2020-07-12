@@ -1,4 +1,4 @@
-name: build image
+name: Build and push image
 
 on:
   repository_dispatch:
@@ -12,6 +12,7 @@ env:
   DOCKER_REPO_GIT: "odyssey-docker/odyssey"
 
 jobs:
+#  Add DockerLint Job  and validate
   buildImage:
     runs-on: ubuntu-latest
     steps:
@@ -21,9 +22,13 @@ jobs:
         if: ${{ github.event.client_payload.tag }}
         run: |
           echo "New tag=>${{ github.event.client_payload.id }}"
-          docker build --build-arg ODYSSEY_VERSION=${{ github.event.client_payload.id }} -t ${DOCKER_IMAGE}:${GITHUB_ACTION} .
+          docker build --build-arg ODYSSEY_VERSION=${{ github.event.client_payload.id }} -t ${DOCKER_IMAGE}:${GITHUB_RUN_NUMBER} .
       - name: Build from latest commit ID
         if: ${{ github.event.client_payload.commit }}
         run: |
           echo "New latest master commit_id=>${{ github.event.client_payload.id }}"
-          docker build --build-arg ODYSSEY_VERSION=${ODYSSEY_MAIN_BRANCH} -t ${DOCKER_IMAGE}:${GITHUB_ACTION} .
+          docker build --build-arg ODYSSEY_VERSION=${ODYSSEY_MAIN_BRANCH} -t ${DOCKER_IMAGE}:${GITHUB_RUN_NUMBER} .
+#      - name: Exit with error if one of above jobs failed
+#      - name: Write new latest data to the .env
+#      - name: Push image to GitHub packages
+#      - name: Push Event to build image in DockerHub
