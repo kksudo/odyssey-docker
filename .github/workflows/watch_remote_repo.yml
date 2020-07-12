@@ -13,86 +13,18 @@ jobs:
     watch-repo:
       runs-on: ubuntu-latest
       steps:
-      - name: Checkout repo
-        uses: actions/checkout@master
-#        TODO: uncomment for debugging session via ssh
-#      - name: Setup tmate session
-#        uses: mxschmitt/action-tmate@v2
-#       touch continue or sudo touch /continue to return job
-      - name: Read local env
-        id: get_vars
-        run: |
-          # Get local vars
-          vars=$(echo $(cat .github/workflows/env.json))
-          echo "::set-output name=_context::$vars"
-
-          echo "::set-env name=LATEST_RELEASE::fromJson(${vars})"
-
-          # Get remote vars
-          echo ::set-env name=LATEST_RELEASE::$(echo $(curl --silent https://api.github.com/repos/${ODYSSEY_GIT_REPO}/releases/latest | grep '"tag_name":' | cut -d'"' -f4))
-          echo ::set-env name=LATEST_MAIN_COMMIT_ID::$(echo $(git ls-remote git://github.com/${ODYSSEY_GIT_REPO}.git HEAD | awk '{ print $1}'))
-
-      - name: If new remote release
-        run: echo " Send evevnt to  build image with tag $LATEST_RELEASE"
-        if: 1.1 != '1.1'
-      - name: If new remote env.LATEST_RELEASE 1
-        run: echo " Send evevnt to  build image with tag $LATEST_RELEASE"
-        if: env.LATEST_RELEASE != 1.1
-      - name: If new remote env.LATEST_RELEASE 2
-        run: echo " Send evevnt to  build image with tag $LATEST_RELEASE"
-        if: 'env.LATEST_RELEASE != 1.1'
-      - name: If new remote env.LATEST_RELEASE 3
-        run: echo " Send evevnt to  build image with tag $LATEST_RELEASE"
-        if: fromJson(steps.get_vars.outputs._context).OD_RELEASE != 1.1
-
-      - name: If LATEST_RELEASE
-        run: echo " Send evevnt to  build image with tag $LATEST_RELEASE"
-        if: env.LATEST_RELEASE != ${{ fromJson(steps.get_vars.outputs._context).OD_RELEASE }}
-      - name: If new remote commit
-        run: echo " Send evevnt to  build image from master branch wit ID=> $LATEST_MAIN_COMMIT_ID"
-        if: env.LATEST_MAIN_COMMIT_ID != ${{ fromJson(steps.get_vars.outputs._context).OD_MAIN_COMMIT_ID }}
-
-      - name: Send event to build image with tag
-        if: $LATEST_RELEASE != ${{ fromJson(steps.get_vars.outputs._context).OD_RELEASE }}
-        run: |
-          echo "Send event to build image with tag LATEST_RELEASE=> $LATEST_RELEASE"
-      - name: Send event to build image from master branch
-        if: $LATEST_MAIN_COMMIT_ID != ${{ fromJson(steps.get_vars.outputs._context).OD_MAIN_COMMIT_ID }}
-        run: |
-          echo "Send event to build image from master branch LATEST_MAIN_COMMIT_ID=> $LATEST_MAIN_COMMIT_ID"
-#      - name: Send event to build image with tag
-#        if: $LATEST_RELEASE != ${{ fromJson(steps.get_vars.outputs._context).OD_RELEASE }}
-#        uses: peter-evans/repository-dispatch@v1
-#        with:
-#          token: ${{ secrets.GH_TOKEN }}
-#          event-type: build_release
-#          client-payload: '{"release": "$LATEST_RELEASE"}'
-#      - name: Send event to build image from master branch
-#        if: $LATEST_MAIN_COMMIT_ID != ${{ fromJson(steps.get_vars.outputs._context).OD_MAIN_COMMIT_ID }}
-#        uses: peter-evans/repository-dispatch@v1
-#        with:
-#          token: ${{ secrets.GH_TOKEN }}
-#          event-type: build_master
-#          client-payload: '{"id": "$LATEST_MAIN_COMMIT_ID"}'
-#      TODO: remove last debug step
-      - name: Empty job after all
-        run: echo "finished the job; implement msg if the build wasn't run"
-
-
-# TODO: Read output context
-#        run: |
-#          echo "$MY_CONTEXT"
-#          echo "${{ fromJson(steps.get_vars.outputs._context).OD_MAIN_COMMIT_ID }}"
-
-# TODO: send event to build new image
-#    build-event:
-#      needs: watch-repo
-#      if: success()
-#      runs-on: ubuntu-latest
-#      steps:
-#      - name: Repository Dispatch
-#        uses: peter-evans/repository-dispatch@v1
-#        with:
-#          token: ${{ secrets.GH_TOKEN }}
-#          event-type: build
-#          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
+        - name: Checkout repo
+          uses: actions/checkout@master
+        - name: Get the latest up-to-date data from a remote repository
+          id: get_remote_vars
+          run: |
+            echo ::set-env name=LATEST_REMOTE_RELEASE::$(echo $(curl --silent https://api.github.com/repos/${ODYSSEY_GIT_REPO}/releases/latest | grep '"tag_name":' | cut -d'"' -f4))
+            echo ::set-env name=LATEST_REMOTE_MASTER_COMMIT_ID::$(echo $(git ls-remote git://github.com/${ODYSSEY_GIT_REPO}.git HEAD | awk '{ print $1}'))
+        - name: ===DEBUG===
+          run: |
+            echo
+            echo
+            echo "-- Environment variables ----------------------------------------------"
+            env
+            echo "-----------------------------------------------------------------------"
+        
