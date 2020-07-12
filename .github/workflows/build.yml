@@ -8,10 +8,13 @@ jobs:
   buildImage:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@master
-      - run: |
+      - name: ===DEBUG===
+        run: |
+          echo
+          echo "-- Environment variables ----------------------------------------------"
           env
+          echo "-----------------------------------------------------------------------"
+      - run: |
           echo ${{ github.event.client_payload.tag }}
           echo ${{ github.event.client_payload.commit }}
           echo "New tag=>${{ github.event.client_payload.tag }}"
