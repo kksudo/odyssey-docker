@@ -5,25 +5,21 @@ on:
     types: [build_release,build_master]
 
 jobs:
-  buildImage:
+  buildReleaseImage:
     runs-on: ubuntu-latest
     steps:
-      - name: ===DEBUG===
-        run: |
-          echo
-          echo "-- Environment variables ----------------------------------------------"
-          env
-          echo "-----------------------------------------------------------------------"
-      - run: |
-          echo ${{ github.event.client_payload.tag }}
-          echo ${{ github.event.client_payload.commit }}
-          echo "New tag=>${{ github.event.client_payload.tag }}"
-          echo "New latest master commit_id=>${{ github.event.client_payload.commit }}"
       - name: Build image with new release
         if: ${{ github.event.client_payload.tag }}
         run: |
           echo "New tag=>${{ github.event.client_payload.tag }}"
+      - name: Test second action
+        run: echo "build image from tag=${{ github.event.client_payload.tag }}"
+  buildMasterImage:
+    runs-on: ubuntu-latest
+    steps:
       - name: Build image from latest master branch
         if: ${{ github.event.client_payload.commit }}
         run: |
           echo "New latest master commit_id=>${{ github.event.client_payload.commit }}"
+      - name: Test second action
+        run: echo "build image from commit_id=${{ github.event.client_payload.tag }}"
