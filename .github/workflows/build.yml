@@ -57,7 +57,7 @@ jobs:
       - name: Push latest vars to git
         uses: EndBug/add-and-commit@v4
         with:
-          add: $LOCAL_ENV_PATH
+          add: ${{env.LOCAL_ENV_PATH}}
           author_name: Github actions
           author_email: mail@runner.bot
           message: "CI_BOT: Update local .env: Latest image is ${{ github.event.client_payload.id }}"
