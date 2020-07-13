@@ -62,4 +62,4 @@ jobs:
           author_email: mail@runner.bot
           message: "CI_BOT: Update local .env: Latest image is ${{ github.event.client_payload.id }}"
         env:
-          GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
