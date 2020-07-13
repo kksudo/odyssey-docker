@@ -10,7 +10,7 @@ env:
   ODYSSEY_MAIN_BRANCH: "master"
   DOCKER_REG_GIT: "docker.pkg.github.com"
   DOCKER_REPO_GIT: "odyssey-docker/odyssey"
-  LOCAL_ENV_PATH: ".github/workflows/.env"
+  LOCAL_ENV_PATH: ".github/.env"
 
 jobs:
 #  Add DockerLint Job  and validate
