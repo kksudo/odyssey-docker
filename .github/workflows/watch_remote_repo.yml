@@ -6,6 +6,8 @@ on:
   push:
     branches:
       - develop
+    paths-ignore:
+      - ".github/workflows/.env"
 env:
   USER: "kksudo"
   ODYSSEY_GIT_REPO: "yandex/odyssey"

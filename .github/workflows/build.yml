@@ -45,7 +45,7 @@ jobs:
             docker tag ${DOCKER_IMAGE}:CI_${GITHUB_RUN_NUMBER} ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:$tag
             docker push ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:$tag
           done
-      - name: Write latest commit to .env and push
+      - name: Write latest commit to .env
         run: |
           if [ ${{ github.event.client_payload.tag }} ]
           then
@@ -55,9 +55,11 @@ jobs:
             sed -i -E "s/(OD_MASTER_COMMIT_ID=).*$/\1${{ github.event.client_payload.id }}/" $LOCAL_ENV_PATH
           fi
       - name: Push latest vars to git
-        run: |
-          git config --local user.email "ci@bot"
-          git config --local user.name "Runner.Wathcher"
-          git add $LOCAL_ENV_PATH
-          git commit -m "CI: Update local .env: Latest image is {{ github.event.client_payload.id }}"
-          git push
+        uses: EndBug/add-and-commit@v4
+        with:
+          add: $LOCAL_ENV_PATH
+          author_name: Github actions
+          author_email: mail@runner.bot
+          message: "CI_BOT: Update local .env: Latest image is ${{ github.event.client_payload.id }}"
+        env:
+          GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
