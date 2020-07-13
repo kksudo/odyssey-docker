@@ -10,8 +10,6 @@ env:
   ODYSSEY_MAIN_BRANCH: "master"
   DOCKER_REG_GIT: "docker.pkg.github.com"
   DOCKER_REPO_GIT: "odyssey-docker/odyssey"
-  # TODO: create latest tag
-  DEV_TAG: "develop"
 
 jobs:
 #  Add DockerLint Job  and validate
@@ -25,15 +23,29 @@ jobs:
       - name: Build from new tag
         if: ${{ github.event.client_payload.tag }}
         run: |
+          echo "::set-env name=COMMIT_TYPE::${{ github.event.client_payload.tag }}"
           echo "New tag=>${{ github.event.client_payload.id }}"
-          docker build --pull --cache-from ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:${DEV_TAG} --build-arg ODYSSEY_VERSION=${{ github.event.client_payload.id }} -t ${DOCKER_IMAGE}:CI_${GITHUB_RUN_NUMBER} .
+          docker build --pull --cache-from ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:develop \
+                    --build-arg ODYSSEY_VERSION=${{ github.event.client_payload.id }} \
+                    -t ${DOCKER_IMAGE}:CI_${GITHUB_RUN_NUMBER} .
       - name: Build from latest commit ID
         if: ${{ github.event.client_payload.commit }}
         run: |
+          echo "::set-env name=COMMIT_TYPE::$(echo $ODYSSEY_MAIN_BRANCH)"
           echo "New latest master commit_id=>${{ github.event.client_payload.id }}"
-          docker build --build-arg ODYSSEY_VERSION=${ODYSSEY_MAIN_BRANCH} -t ${DOCKER_IMAGE}:CI_${GITHUB_RUN_NUMBER} .
-#      - name: Add docker tags
+          docker build --pull --cache-from ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:develop \
+                    --build-arg ODYSSEY_VERSION=${ODYSSEY_MAIN_BRANCH} \
+                    -t ${DOCKER_IMAGE}:CI_${GITHUB_RUN_NUMBER} .
+
+      - name: Add docker tags and push to GitHub Packages
+        run: |
+          TAGS=(develop latest $COMMIT_TYPE ${{ github.event.client_payload.commit }} CI_${GITHUB_RUN_NUMBER})
+          for tag in ${TAGS[*]}
+          do
+            docker tag ${DOCKER_IMAGE}:CI_${GITHUB_RUN_NUMBER} ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:$tag
+            docker push ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:$tag
+          done
+
 #      - name: Exit with error if one of above jobs failed
 #      - name: Write new latest data to the .env
-#      - name: Push image to GitHub packages
-#      - name: Push Event to build image in DockerHub
+#      - name: Push Event to build image in DockerHub (from master)
