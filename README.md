@@ -19,15 +19,16 @@ Features:
 Available tags
 --------------
 
-- `latest` - Latest build in CI.
-- `develop` - Latest debug build.
-
-Stable images:
+Stable tags:
 
 - `1.1` - Image from latest tag in [yandex/odyssey](https://github.com/yandex/odyssey). Latest stable version.
 - `master` - Image from latest master branch in [yandex/odyssey](https://github.com/yandex/odyssey). Latest develop version.
 - `<commit_id>` - Same as master, but tagged with commit_id.
 
+Tags for development, do not use them.
+
+- `latest` - Latest build in CI.
+- `develop` - Latest debug build.
 
 Project status
 --------------
