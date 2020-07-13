@@ -1,4 +1,4 @@
-name: watch-remote-repo
+name: Watching remote repo
 
 on:
 #  schedule:
