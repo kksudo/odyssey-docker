@@ -54,7 +54,10 @@ jobs:
           then
             sed -i -E "s/(OD_MASTER_COMMIT_ID=).*$/\1${{ github.event.client_payload.id }}/" $LOCAL_ENV_PATH
           fi
-
+      - name: Push latest vars to git
+        run: |
+          git config --local user.email "ci@bot"
+          git config --local user.name "Runner.Wathcher"
           git add $LOCAL_ENV_PATH
           git commit -m "CI: Update local .env: Latest image is {{ github.event.client_payload.id }}"
           git push
