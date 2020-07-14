@@ -60,6 +60,6 @@ jobs:
           add: ${{env.LOCAL_ENV_PATH}}
           author_name: Github actions
           author_email: mail@runner.bot
-          message: "CI_BOT: Update local .env: Latest image is ${{ github.event.client_payload.id }}"
+          message: "CI_BOT:Image baked:Latest image is ${{ github.event.client_payload.id }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

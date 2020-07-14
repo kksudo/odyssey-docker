@@ -1,8 +1,8 @@
 name: Watching remote repo
 
 on:
-#  schedule:
-#    - cron:  '* */1 * * *'
+  schedule:
+    - cron:  '* */1 * * *'
   push:
     branches:
       - develop

@@ -1,7 +1,15 @@
-# Odyssey-docker
+<p align="center">
+	<img src="logo.png" width="35%" height="35%" /><br>
+</p>
+<br>
+
+Project status
+--------------
+
+Warning: The project is under development.
 ![master-build](https://github.com/kksudo/odyssey-docker/workflows/master-build/badge.svg?branch=develop)
 
-### Odyssey
+# Odyssey
 Advanced multi-threaded [PostgreSQL](https://www.postgresql.org/) connection pooler and request router.
 
 Odyssey Docker image
@@ -28,9 +36,4 @@ Stable tags:
 Tags for development, do not use them.
 
 - `latest` - Latest build in CI.
-- `develop` - Latest debug build.
-
-Project status
---------------
-
-Warning: The project is under development.   
+- `develop` - Latest debug build.   
