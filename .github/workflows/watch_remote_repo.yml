@@ -2,7 +2,7 @@ name: Watching remote repo
 
 on:
   schedule:
-    - cron:  '* */1 * * *'
+    - cron:  '07 * * * *'
   push:
     branches:
       - develop
