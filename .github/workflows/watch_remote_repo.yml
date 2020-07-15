@@ -1,0 +1,45 @@
+name: Watching remote repo
+
+on:
+  schedule:
+    - cron:  '07 * * * *'
+  push:
+    branches:
+      - develop
+    paths-ignore:
+      - ".github/.env"
+env:
+  USER: "kksudo"
+  ODYSSEY_GIT_REPO: "yandex/odyssey"
+  LOCAL_ENV_PATH: ".github/.env"
+jobs:
+    watch-repo:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout repo
+          uses: actions/checkout@master
+        - name: Get the latest up-to-date data from a remote repository
+          id: get_remote_vars
+          run: |
+            echo ::set-env name=LATEST_REMOTE_RELEASE::$(echo $(curl --silent https://api.github.com/repos/${ODYSSEY_GIT_REPO}/releases/latest | grep '"tag_name":' | cut -d'"' -f4))
+            echo ::set-env name=LATEST_REMOTE_MASTER_COMMIT_ID::$(echo $(git ls-remote git://github.com/${ODYSSEY_GIT_REPO}.git HEAD | awk '{ print $1}'))
+        - name: Get the local vars from .env
+          id: get_local_vars
+          uses: falti/dotenv-action@v0.2.4
+          with:
+            path: ${{ env.LOCAL_ENV_PATH }}
+        - name: The official LATEST_RELEASE has been updated
+          if: env.LATEST_REMOTE_RELEASE != steps.get_local_vars.outputs.od_release
+          uses: peter-evans/repository-dispatch@v1
+          with:
+            token: ${{ secrets.GH_TOKEN }}
+            event-type: release
+            client-payload: '{"id": "${{ env.LATEST_REMOTE_MASTER_COMMIT_ID }}", "tag": "true"}'
+        - name: The official MASTER branch has been updated
+          if: env.LATEST_REMOTE_MASTER_COMMIT_ID != steps.get_local_vars.outputs.od_master_commit_id
+          uses: peter-evans/repository-dispatch@v1
+          with:
+            token: ${{ secrets.GH_TOKEN }}
+            event-type: master
+            client-payload: '{"id": "${{ env.LATEST_REMOTE_MASTER_COMMIT_ID }}", "commit": "true"}'
+

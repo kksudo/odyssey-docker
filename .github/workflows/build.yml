@@ -1,0 +1,65 @@
+name: Build and push image
+
+on:
+  repository_dispatch:
+    types: [release,master]
+env:
+  USER: "kksudo"
+  DOCKER_IMAGE: "odyssey-docker"
+  ODYSSEY_GIT_REPO: "yandex/odyssey"
+  ODYSSEY_MAIN_BRANCH: "master"
+  DOCKER_REG_GIT: "docker.pkg.github.com"
+  DOCKER_REPO_GIT: "odyssey-docker/odyssey"
+  LOCAL_ENV_PATH: ".github/.env"
+
+jobs:
+#  Add DockerLint Job  and validate
+  buildImage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@master
+      - name: Login to gitHub docker registry and pull latest image
+        run:  |
+          docker login ${DOCKER_REG_GIT} -u ${USER} -p ${{secrets.GH_TOKEN}}
+          docker pull ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:develop
+      - name: Build from new tag
+        if: ${{ github.event.client_payload.tag }}
+        run: |
+          echo "::set-env name=COMMIT_TYPE::${{ github.event.client_payload.tag }}"
+          echo "New tag=>${{ github.event.client_payload.id }}"
+          docker build --build-arg ODYSSEY_VERSION=${{ github.event.client_payload.id }} \
+                    -t ${DOCKER_IMAGE}:CI_${GITHUB_RUN_NUMBER} .
+      - name: Build from latest commit ID
+        if: ${{ github.event.client_payload.commit }}
+        run: |
+          echo "::set-env name=COMMIT_TYPE::$(echo $ODYSSEY_MAIN_BRANCH)"
+          echo "New latest master commit_id=>${{ github.event.client_payload.id }}"
+          docker build --build-arg ODYSSEY_VERSION=${ODYSSEY_MAIN_BRANCH} \
+                    -t ${DOCKER_IMAGE}:CI_${GITHUB_RUN_NUMBER} .
+      - name: Add docker tags and push to GitHub Packages
+        run: |
+          TAGS=(develop latest $COMMIT_TYPE ${{ github.event.client_payload.id }} CI_${GITHUB_RUN_NUMBER})
+          for tag in ${TAGS[*]}
+          do
+            docker tag ${DOCKER_IMAGE}:CI_${GITHUB_RUN_NUMBER} ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:$tag
+            docker push ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:$tag
+          done
+      - name: Write latest commit to .env
+        run: |
+          if [ ${{ github.event.client_payload.tag }} ]
+          then
+            sed -i -E "s/(OD_RELEASE=).*$/\1${{ github.event.client_payload.id }}/" $LOCAL_ENV_PATH
+          elif [ ${{ github.event.client_payload.commit }} ]
+          then
+            sed -i -E "s/(OD_MASTER_COMMIT_ID=).*$/\1${{ github.event.client_payload.id }}/" $LOCAL_ENV_PATH
+          fi
+      - name: Push latest vars to git
+        uses: EndBug/add-and-commit@v4
+        with:
+          add: ${{env.LOCAL_ENV_PATH}}
+          author_name: Github actions
+          author_email: mail@runner.bot
+          message: "CI_BOT:Image baked:Latest image is ${{ github.event.client_payload.id }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

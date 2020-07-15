@@ -1,0 +1,13 @@
+steps:
+  - name: ===DEBUG envs===
+    run: |
+      echo
+      echo "❌ Useful icon for check fail step"
+      echo "✅ Useful icon for check success step"
+      echo "-- Environment variables ----------------------------------------------"
+      env
+      echo "-----------------------------------------------------------------------"
+  - name: Setup tmate session
+    uses: mxschmitt/action-tmate@v2
+#         touch continue or sudo touch /continue to return job
+# GitHub workflow on local machine https://github.com/nektos/act
