@@ -6,8 +6,9 @@
 Project status
 --------------
 
+Latest build ![Build and push image](https://github.com/kksudo/odyssey-docker/workflows/Build%20and%20push%20image/badge.svg)    
 Warning: The project is under development.
-![master-build](https://github.com/kksudo/odyssey-docker/workflows/master-build/badge.svg?branch=develop)
+
 
 # Odyssey
 Advanced multi-threaded [PostgreSQL](https://www.postgresql.org/) connection pooler and request router.

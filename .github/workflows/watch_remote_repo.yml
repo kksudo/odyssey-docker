@@ -17,7 +17,7 @@ jobs:
       runs-on: ubuntu-latest
       steps:
         - name: Checkout repo
-          uses: actions/checkout@master
+          uses: actions/checkout@v2
         - name: Get the latest up-to-date data from a remote repository
           id: get_remote_vars
           run: |
