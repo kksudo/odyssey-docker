@@ -3,6 +3,11 @@ name: Build and push image
 on:
   repository_dispatch:
     types: [release,master]
+
+defaults:
+  run:
+    shell: bash
+
 env:
   USER: "kksudo"
   DOCKER_IMAGE: "odyssey-docker"
@@ -22,11 +27,11 @@ jobs:
       - name: Login to gitHub docker registry and pull latest image
         run:  |
           docker login ${DOCKER_REG_GIT} -u ${USER} -p ${{secrets.GH_TOKEN}}
-          docker pull ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:develop
+          docker pull ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:latest
       - name: Build from new tag
         if: ${{ github.event.client_payload.tag }}
         run: |
-          echo "::set-env name=COMMIT_TYPE::${{ github.event.client_payload.tag }}"
+          echo "::set-env name=COMMIT_TYPE::${{ github.event.client_payload.tag }} stable"
           echo "New tag=>${{ github.event.client_payload.id }}"
           docker build --build-arg ODYSSEY_VERSION=${{ github.event.client_payload.id }} \
                     -t ${DOCKER_IMAGE}:CI_${GITHUB_RUN_NUMBER} .
@@ -39,7 +44,7 @@ jobs:
                     -t ${DOCKER_IMAGE}:CI_${GITHUB_RUN_NUMBER} .
       - name: Add docker tags and push to GitHub Packages
         run: |
-          TAGS=(develop latest $COMMIT_TYPE ${{ github.event.client_payload.id }} CI_${GITHUB_RUN_NUMBER})
+          TAGS=(latest $COMMIT_TYPE ${{ github.event.client_payload.id }} CI_${GITHUB_RUN_NUMBER})
           for tag in ${TAGS[*]}
           do
             docker tag ${DOCKER_IMAGE}:CI_${GITHUB_RUN_NUMBER} ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:$tag
