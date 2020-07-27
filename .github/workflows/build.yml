@@ -31,7 +31,7 @@ jobs:
       - name: Build from new tag
         if: ${{ github.event.client_payload.tag }}
         run: |
-          echo "::set-env name=COMMIT_TYPE::${{ github.event.client_payload.tag }} stable"
+          echo "::set-env name=COMMIT_TYPE::stable"
           echo "New tag=>${{ github.event.client_payload.id }}"
           docker build --build-arg ODYSSEY_VERSION=${{ github.event.client_payload.id }} \
                     -t ${DOCKER_IMAGE}:CI_${GITHUB_RUN_NUMBER} .
