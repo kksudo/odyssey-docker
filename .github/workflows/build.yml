@@ -27,7 +27,7 @@ jobs:
       - name: Login to gitHub docker registry and pull latest image
         run:  |
           docker login ${DOCKER_REG_GIT} -u ${USER} -p ${{secrets.GH_TOKEN}}
-          docker pull ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:latest
+          docker pull ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:builder
       - name: Set envs for build from a new tag
         if: ${{ github.event.client_payload.tag }}
         run: |
@@ -42,6 +42,8 @@ jobs:
           echo "New latest master commit_id=>${{ github.event.client_payload.id }}"
       - name: Build images
         run: |
+          docker build -t ${DOCKER_IMAGE}:builder . \
+                        --target builder-env
           docker build --build-arg ODYSSEY_VERSION=${ODYSSEY_VERSION} \
                         -t ${DOCKER_IMAGE}-ubuntu:CI_${GITHUB_RUN_NUMBER}-ubuntu . \
                         --target ubuntu-distro

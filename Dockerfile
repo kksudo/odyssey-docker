@@ -1,4 +1,4 @@
-FROM ubuntu:focal as builder_env
+FROM ubuntu:focal as builder-env
 
 ENV DEBIAN_FRONTEND noninteractive
 WORKDIR /tmp/
@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-FROM builder_env as compiler
+FROM builder-env as compiler
 ARG ODYSSEY_VERSION=1.1
 WORKDIR /tmp/
 # hadolint ignore=DL3003
