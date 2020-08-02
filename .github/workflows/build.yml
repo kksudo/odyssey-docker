@@ -28,28 +28,34 @@ jobs:
         run:  |
           docker login ${DOCKER_REG_GIT} -u ${USER} -p ${{secrets.GH_TOKEN}}
           docker pull ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:latest
-      - name: Build from new tag
+      - name: Set envs for build from a new tag
         if: ${{ github.event.client_payload.tag }}
         run: |
           echo "::set-env name=COMMIT_TYPE::stable"
+          echo "::set-env name=ODYSSEY_VERSION::$(echo ${{ github.event.client_payload.id }})"
           echo "New tag=>${{ github.event.client_payload.id }}"
-          docker build --build-arg ODYSSEY_VERSION=${{ github.event.client_payload.id }} \
-                    -t ${DOCKER_IMAGE}:CI_${GITHUB_RUN_NUMBER} .
-      - name: Build from latest commit ID
+      - name: Set envs for build from the latest commit ID
         if: ${{ github.event.client_payload.commit }}
         run: |
           echo "::set-env name=COMMIT_TYPE::$(echo $ODYSSEY_MAIN_BRANCH)"
+          echo "::set-env name=ODYSSEY_VERSION::$(echo $ODYSSEY_MAIN_BRANCH)"
           echo "New latest master commit_id=>${{ github.event.client_payload.id }}"
-          docker build --build-arg ODYSSEY_VERSION=${ODYSSEY_MAIN_BRANCH} \
-                    -t ${DOCKER_IMAGE}:CI_${GITHUB_RUN_NUMBER} .
+      - name: Build images
+        run: |
+          docker build --build-arg ODYSSEY_VERSION=${ODYSSEY_VERSION} \
+                        -t ${DOCKER_IMAGE}-ubuntu:CI_${GITHUB_RUN_NUMBER}-ubuntu . \
+                        --target ubuntu-distro
+          docker build --build-arg ODYSSEY_VERSION=${ODYSSEY_VERSION} \
+                        -t ${DOCKER_IMAGE}-debian:CI_${GITHUB_RUN_NUMBER}-debian . \
+                        --target debian-distro
       - name: Add docker tags and push to GitHub Packages
         run: |
           TAGS=(latest $COMMIT_TYPE ${{ github.event.client_payload.id }} CI_${GITHUB_RUN_NUMBER})
           for tag in ${TAGS[*]}
           do
             docker tag ${DOCKER_IMAGE}:CI_${GITHUB_RUN_NUMBER} ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:$tag
-            docker push ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:$tag
           done
+          docker push ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}
       - name: Write latest commit to .env
         run: |
           if [ ${{ github.event.client_payload.tag }} ]

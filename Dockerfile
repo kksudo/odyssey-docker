@@ -1,11 +1,10 @@
-FROM ubuntu:focal as builder
+FROM ubuntu:focal as builder_env
 
-ARG ODYSSEY_VERSION=1.1
 ENV DEBIAN_FRONTEND noninteractive
 WORKDIR /tmp/
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# hadolint ignore=DL3008
+# hadolint ignore=DL3008,DL3009
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
@@ -26,6 +25,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     valgrind \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+FROM builder_env as compiler
+ARG ODYSSEY_VERSION=1.1
+WORKDIR /tmp/
 # hadolint ignore=DL3003
 RUN git clone --branch ${ODYSSEY_VERSION} --depth 1 git://github.com/yandex/odyssey.git \
     && cd odyssey \
@@ -37,17 +40,32 @@ WORKDIR /tmp/odyssey
 RUN grep -v -E '^(#.*|)$' odyssey.conf > build/sources/odyssey-slim.conf
 
 
-FROM ubuntu:focal
+FROM ubuntu:focal AS ubuntu-distro
 # hadolint ignore=DL3008
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl1.1 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 RUN groupadd -r odyssey && useradd -r -g odyssey odyssey
-COPY --from=builder /tmp/odyssey/build/sources/odyssey /usr/local/bin/
-COPY --from=builder /tmp/odyssey/build/sources/odyssey-slim.conf /etc/odyssey/odyssey.conf
+COPY --from=compiler /tmp/odyssey/build/sources/odyssey /usr/local/bin/
+COPY --from=compiler /tmp/odyssey/build/sources/odyssey-slim.conf /etc/odyssey/odyssey.conf
 COPY docker-entrypoint.sh /entrypoint.sh
+RUN chmod a+x /entrypoint.sh
+USER odyssey
+ENTRYPOINT ["/entrypoint.sh"]
+EXPOSE 5432
+CMD ["odyssey"]
 
+FROM debian:buster-slim AS debian-distro
+# hadolint ignore=DL3008
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libssl1.1 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+RUN groupadd -r odyssey && useradd -r -g odyssey odyssey
+COPY --from=compiler /tmp/odyssey/build/sources/odyssey /usr/local/bin/
+COPY --from=compiler /tmp/odyssey/build/sources/odyssey-slim.conf /etc/odyssey/odyssey.conf
+COPY docker-entrypoint.sh /entrypoint.sh
 RUN chmod a+x /entrypoint.sh
 USER odyssey
 ENTRYPOINT ["/entrypoint.sh"]
