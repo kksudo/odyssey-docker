@@ -7,10 +7,12 @@ on:
 
 jobs:
   dockerfile-linter:
-    runs-on: hadolint/hadolint:latest-alpine
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
-      - name: lint the Dockerfile
-        run: hadolint Dockerfile
-
+      - name: Dockerfile lint
+        uses: docker://hadolint/hadolint:latest-alpine
+        with:
+          entrypoint: hadolint
+          args: Dockerfile

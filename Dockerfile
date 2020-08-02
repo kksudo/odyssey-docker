@@ -38,7 +38,7 @@ RUN grep -v -E '^(#.*|)$' odyssey.conf > build/sources/odyssey-slim.conf
 
 
 FROM ubuntu:focal
-
+# hadolint ignore=DL3008
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl1.1 \
     && apt-get clean \
