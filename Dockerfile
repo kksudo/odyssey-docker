@@ -1,9 +1,6 @@
 FROM ubuntu:focal as builder-env
-
 ENV DEBIAN_FRONTEND noninteractive
-WORKDIR /tmp/
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
 # hadolint ignore=DL3008,DL3009
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
