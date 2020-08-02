@@ -1,0 +1,18 @@
+name: Dockerfile linter, validate inline bash
+
+on:
+  push:
+    paths:
+      - 'Dockerfile'
+
+jobs:
+  dockerfile-linter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - name: Dockerfile lint
+        uses: docker://hadolint/hadolint:latest-alpine
+        with:
+          entrypoint: hadolint
+          args: Dockerfile
