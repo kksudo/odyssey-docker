@@ -5,6 +5,7 @@ ENV DEBIAN_FRONTEND noninteractive
 WORKDIR /tmp/
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+# hadolint ignore=DL3008
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
@@ -13,6 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git
 RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
     sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+# hadolint ignore=DL3008
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     cmake \
@@ -24,6 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     valgrind \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+# hadolint ignore=DL3003
 RUN git clone --branch ${ODYSSEY_VERSION} --depth 1 git://github.com/yandex/odyssey.git \
     && cd odyssey \
     && mkdir build \
@@ -35,6 +38,7 @@ RUN grep -v -E '^(#.*|)$' odyssey.conf > build/sources/odyssey-slim.conf
 
 
 FROM ubuntu:focal
+# hadolint ignore=DL3008
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl1.1 \
     && apt-get clean \
