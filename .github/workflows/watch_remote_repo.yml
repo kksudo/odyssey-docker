@@ -8,6 +8,11 @@ on:
       - develop
     paths-ignore:
       - ".github/.env"
+
+defaults:
+  run:
+    shell: bash
+
 env:
   USER: "kksudo"
   ODYSSEY_GIT_REPO: "yandex/odyssey"
