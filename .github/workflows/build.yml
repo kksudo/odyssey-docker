@@ -52,8 +52,10 @@ jobs:
         run: |
           TAGS=(latest $COMMIT_TYPE ${{ github.event.client_payload.id }} CI_${GITHUB_RUN_NUMBER})
           for tag in ${TAGS[*]}
+          docker tag ${DOCKER_IMAGE}-ubuntu:CI_${GITHUB_RUN_NUMBER}-ubuntu ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:latest
           do
-            docker tag ${DOCKER_IMAGE}:CI_${GITHUB_RUN_NUMBER} ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:$tag
+            docker tag ${DOCKER_IMAGE}-debian:CI_${GITHUB_RUN_NUMBER}-debian ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:$tag-debian
+            docker tag ${DOCKER_IMAGE}-ubuntu:CI_${GITHUB_RUN_NUMBER}-ubuntu ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:$tag-ubuntu
           done
           docker push ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}
       - name: Write latest commit to .env
