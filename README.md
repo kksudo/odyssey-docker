@@ -22,7 +22,7 @@ This is a minimal Odyssey image ( [DockerHub](https://hub.docker.com/r/kksudo/od
 * Uses standard Postgres port 5432, to work transparently for applications.
 * /etc/odyssey/odyssey.conf is auto-created if it don't exist.
 * Always automated latest builds from the original repository.
-* Dockerfile linter, validate inline bash, [in progress](https://github.com/kksudo/odyssey-docker/milestone/1).
+* Dockerfile linter, validate inline bash.
 * e2e tests after build image, [in progress](https://github.com/kksudo/odyssey-docker/milestone/5).
 * Docker images in the [DockerHub](https://hub.docker.com/r/kksudo/odyssey-docker) and [Github packages](https://github.com/kksudo/odyssey-docker/packages/), [in progress](https://github.com/kksudo/odyssey-docker/milestone/3).
 * Images based on the Ubuntu:Focal and Alpine, [in progress](https://github.com/kksudo/odyssey-docker/milestone/6).
