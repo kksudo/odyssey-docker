@@ -38,4 +38,5 @@ Available tags
 | `<odyssey_main_branch>`   | `master`      | Image from latest master branch in [yandex/odyssey](https://github.com/yandex/odyssey). Latest develop version of odyssey.    |
 | `<odyssey_commit_id>`     | `c3231634c4fe5d8c538c7442c136e7ec4ba0f983` | Same as master, but tagged with commit_id.                                                       |
 | `<latest_ci_build>`       | `latest`      | Latest tag for latest image.                                                                                                  |
-| `CI_<number_of_build>`    | `CI_276`      | Number of a build for each image build. ONLY for for internal use. DO NOT USE IT                                              |
+| `CI_<number_of_build>`    | `CI_276`      | Unique number for each image build. ONLY for for internal use. DO NOT USE IT                                              |
+| `builder`                 | `builder`     | The image env for compile odyssey app, based on ubuntu:focal. ONLY for for internal use. DO NOT USE IT                    |
