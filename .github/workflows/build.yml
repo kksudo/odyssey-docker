@@ -18,7 +18,6 @@ env:
   LOCAL_ENV_PATH: ".github/.env"
 
 jobs:
-#  Add DockerLint Job  and validate
   buildImage:
     runs-on: ubuntu-latest
     steps:
@@ -54,11 +53,12 @@ jobs:
         run: |
           TAGS=(latest $COMMIT_TYPE ${{ github.event.client_payload.id }} CI_${GITHUB_RUN_NUMBER})
           for tag in ${TAGS[*]}
-          docker tag ${DOCKER_IMAGE}-ubuntu:CI_${GITHUB_RUN_NUMBER}-ubuntu ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:latest
           do
             docker tag ${DOCKER_IMAGE}-debian:CI_${GITHUB_RUN_NUMBER}-debian ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:$tag-debian
             docker tag ${DOCKER_IMAGE}-ubuntu:CI_${GITHUB_RUN_NUMBER}-ubuntu ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:$tag-ubuntu
           done
+          docker tag ${DOCKER_IMAGE}-ubuntu:CI_${GITHUB_RUN_NUMBER}-ubuntu ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:latest
+          docker tag ${DOCKER_IMAGE}:builder ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}:builder
           docker push ${DOCKER_REG_GIT}/${USER}/${DOCKER_REPO_GIT}
       - name: Write latest commit to .env
         run: |
